@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Guest Login System - Practice</title>
+        <title>Guest Login System</title>
         <link rel="stylesheet" href="<?php echo e(asset('css/guest_login_style.css')); ?>">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     </head>
@@ -15,14 +15,19 @@
                 <!-- <a class="navbar-brand" href="#">Your Logo</a> -->
         
                 <!-- Logout button -->
-                <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+                <form method="POST" action="<?php echo e(route('logout')); ?>">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit" class="btn btn-outline-light">Logout</button>
+                </form>
             </div>
         </nav>
         <div style="margin: 50px; border-radius: 10px;">
             <div style="margin-bottom: 25px">
                 <h2>Welcome!</h2>
             </div>
-    
+            <div style="margin-bottom: 20px">
+                <button type="submit">View All Records</button> 
+            </div>
             <div style="display: flex; flex-direction: column;">
                 <table style="border-radius: 10px; margin-bottom: 20px;">
                     <thead>

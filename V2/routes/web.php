@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\GuestRecordController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,10 +18,9 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/admin-login', function () {
-    return view('admin_login');
-});
+Route::get('/admin-login', [LoginController::class, 'index'])->name('admin.login');
+Route::post('/admin-login', [LoginController::class, 'login']);
+Route::get('/guest-login', [GuestRecordController::class, 'index'])->name('guest.login');
+Route::post('/logout', [GuestRecordController::class, 'logout'])->name('logout');
+Route::middleware('auth')->get('/guest-login', [GuestRecordController::class, 'index'])->name('guest.login');
 
-Route::get('/guest-login', function () {
-    return view('guest_login');
-});
