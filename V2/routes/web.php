@@ -23,4 +23,6 @@ Route::post('/admin-login', [LoginController::class, 'login']);
 Route::get('/guest-login', [GuestRecordController::class, 'index'])->name('guest.login');
 Route::post('/logout', [GuestRecordController::class, 'logout'])->name('logout');
 Route::middleware('auth')->get('/guest-login', [GuestRecordController::class, 'index'])->name('guest.login');
-
+Route::post('/guests-store', [GuestRecordController::class, 'store'])->name('guests.store');
+Route::get('/visit-guest-record', [GuestRecordController::class, 'visit_guest_record'])->name('visit.guest.record');
+Route::delete('/delete-guest-record/{id}', [GuestRecordController::class, 'delete_guest_record'])->name('delete.guest.record');
