@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Guests;
+use Illuminate\Http\JsonResponse;
 
 class GuestRecordController extends Controller
 {
@@ -57,7 +58,6 @@ class GuestRecordController extends Controller
             }
         }
     }
-    
 
     public function logout(Request $request)
     {
@@ -65,5 +65,22 @@ class GuestRecordController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/admin-login');
+    }
+
+    public function log_time_out(Request $request){
+        $validatedData = $request->validate([
+            'guest_id' => 'required|exists:guests,id',
+            'time_out' => 'required|date_format:H:i|after:time_in',
+        ]);
+    
+        $guest = Guests::find($validatedData['guest_id']);
+        $guest->time_out = $validatedData['time_out'];
+        $time_out_logged = $guest->save();
+        
+        if ($time_out_logged) {
+            return response()->json(['success' => true, 'message' => 'Time out logged successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Logging time out failed. Please try again.']);
+        }
     }
 }

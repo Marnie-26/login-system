@@ -26,3 +26,4 @@ Route::middleware('auth')->get('/guest-login', [GuestRecordController::class, 'i
 Route::post('/guests-store', [GuestRecordController::class, 'store'])->name('guests.store');
 Route::get('/visit-guest-record', [GuestRecordController::class, 'visit_guest_record'])->name('visit.guest.record');
 Route::delete('/delete-guest-record/{id}', [GuestRecordController::class, 'delete_guest_record'])->name('delete.guest.record');
+Route::post('/log-time-out', [GuestRecordController::class, 'log_time_out'])->name('log.time.out');

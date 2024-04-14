@@ -73,10 +73,26 @@
                                     <td>{{ $guest->visit_purpose }}</td>
                                     <td>{{ $guest->visit_date }}</td>
                                     <td>{{ $guest->time_in }}</td>
-                                    <td>{{ $guest->time_out }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-outline-primary">Edit</button>
-                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $guest->id }}">Delete</button>
+                                        @if ($guest->time_out)
+                                            {{ $guest->time_out }}
+                                        @else
+                                            <form id="logTimeOutForm" action="{{ route('log.time.out') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="guest_id" value="{{ $guest->id }}">
+                                                <input type="time" class="form-control time-out-input" name="time_out">
+                                            </form>
+                                        @endif
+                                        <span class="time-out-cell" style="display: none;">{{ $guest->time_out }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            @if (!$guest->time_out)
+                                                <button type="button" class="btn btn-outline-success me-2 save-time-out-btn">Log Time Out</button></form>
+                                            @endif
+                                            <button type="button" class="btn btn-outline-primary me-2 edit-btn">Edit</button>
+                                            <button type="button" class="btn btn-outline-danger me-2 delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $guest->id }}">Delete</button>
+                                        </div>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -111,6 +127,82 @@
                 </div>
             </div>
         </div>
+        <script>
+            // Logging time out
+            document.addEventListener('DOMContentLoaded', function() {
+                const saveTimeOutButtons = document.querySelectorAll('.save-time-out-btn');
+                saveTimeOutButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        const row = button.closest('tr');
+                        const guestId = row.querySelector('input[name="guest_id"]').value;
+                        const timeOutInput = row.querySelector('.time-out-input');
+                        const timeOutValue = timeOutInput.value;
+                        
+                        const formData = new FormData();
+                        formData.append('guest_id', guestId);
+                        formData.append('time_out', timeOutValue);
+
+                        fetch('{{ route('log.time.out') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.success) {
+                                const successAlert = document.createElement('div');
+                                successAlert.classList.add('alert', 'alert-success');
+                                successAlert.setAttribute('role', 'alert');
+                                successAlert.style.marginTop = '10px';
+                                successAlert.textContent = data.message;
+
+                                const table = document.querySelector('.table');
+                                table.parentNode.insertBefore(successAlert, table);
+                                
+                                const timeOutCell = row.querySelector('.time-out-cell');
+                                timeOutCell.textContent = timeOutValue;
+
+                                timeOutInput.style.display = 'none';
+                                timeOutCell.style.display = 'inline';
+                                button.style.display = 'none'; 
+                            } else {
+                                const errorAlert = document.createElement('div');
+                                errorAlert.classList.add('alert', 'alert-danger');
+                                errorAlert.setAttribute('role', 'alert');
+                                errorAlert.style.marginTop = '10px';
+                                errorAlert.textContent = data.message;
+
+                                const table = document.querySelector('.table');
+                                table.parentNode.insertBefore(errorAlert, table);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    });
+                });
+            });
+
+            // Show 'Log Time Out' button if time is selected'
+            document.addEventListener('DOMContentLoaded', function() {
+                const timeOutInputs = document.querySelectorAll('.time-out-input');
+                timeOutInputs.forEach(function(input) {
+                    input.addEventListener('change', function() {
+                        const row = input.closest('tr');
+                        const saveButton = row.querySelector('.save-time-out-btn');
+                        saveButton.style.display = input.value ? 'block' : 'none';
+                    });
+        
+                    if (!input.value) {
+                        const row = input.closest('tr');
+                        const saveButton = row.querySelector('.save-time-out-btn');
+                        saveButton.style.display = 'none';
+                    }
+                });
+            });
+        </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
