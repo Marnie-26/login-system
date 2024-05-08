@@ -77,3 +77,15 @@ button {
 button:hover {
     background-color: #525b64;
 }
+
+.pagination-dark .page-link {
+    color:#343a40;
+    background-color: #ffffff ;
+    border-color: #d3d3d3;
+}
+
+.pagination-dark .page-item.active .page-link {
+    background-color: #212529;
+    border-color: #212529;
+}
+

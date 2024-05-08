@@ -15,7 +15,7 @@ class Guests extends Model
         'last_name',
         'visit_purpose',
         'visit_date',
-        'image',
+        'id_presented',
         'time_in',
         'time_out',
     ];

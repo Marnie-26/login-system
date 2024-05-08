@@ -3,9 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Guest Login System</title>
+        <title>The Regency at Salcedo Visitor's Log</title>
         <link rel="stylesheet" href="{{ asset('css/guest_login_style.css') }}">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://kit.fontawesome.com/16f4fda31b.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-body">
@@ -13,25 +14,25 @@
                 <!-- Current Admin Logged In -->
                 <span class="navbar-text">
                     @if(auth()->check())
-                        Admin: {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                        <i class="fa-solid fa-user-tie"></i> Admin: {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
                     @endif
                 </span>
                 <!-- Logout button -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light">Logout</button>
+                    <button type="submit" class="btn btn-outline-light"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                 </form>
             </div>
         </nav>
         <div class="container mt-5">
             <div class="row">
                 <div class="col">
-                    <h2>Welcome to the Regency at Salcedo!</h2>
+                    <h2>Welcome to The Regency at Salcedo!</h2>
                 </div>
             </div>
             <div class="row mt-3">
                 <div class="col">
-                    <a href="{{ route('visit.guest.record') }}" class="btn btn-dark">View All Records</a>
+                    <a href="{{ route('visit.guest.record') }}" class="btn btn-dark"> <i class="fa-solid fa-eye"></i> View All Records</a>
                 </div>
             </div>
             
@@ -59,23 +60,25 @@
                                         <th>Middle Name</th>
                                         <th>Last Name</th>
                                         <th>Purpose</th>
+                                        <th>ID Presented</th>
                                         <th>Date</th>
                                         <th>Time In</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input type="text" name="first_name" class="form-control" placeholder="Enter First Name" required></td>
-                                        <td><input type="text" name="middle_name" class="form-control" placeholder="Enter Middle Name"></td>
-                                        <td><input type="text" name="last_name" class="form-control" placeholder="Enter Last Name" required></td>
-                                        <td><input type="text" name="visit_purpose" class="form-control" placeholder="Enter Visiting Purpose" required></td>
+                                        <td><input type="text" name="first_name" class="form-control" placeholder="Enter first name" required></td>
+                                        <td><input type="text" name="middle_name" class="form-control" placeholder="Enter middle name"></td>
+                                        <td><input type="text" name="last_name" class="form-control" placeholder="Enter last name" required></td>
+                                        <td><input type="text" name="visit_purpose" class="form-control" placeholder="Enter visit purpose" required></td>
+                                        <td><input type="text" name="id_presented" class="form-control" placeholder="Enter type of ID" required></td>
                                         <td><input type="date" name="visit_date" class="form-control" id="visitDate" required></td>
                                         <td><input type="time" name="time_in" class="form-control" id="timeIn" required></td>
                                     </tr>
                                 </tbody>
                             </table>
                             <div class="col text-end">
-                                <button type="submit" class="btn btn-dark">Add New Visitor</button>
+                                <button type="submit" class="btn btn-dark"> <i class="fa-solid fa-plus"></i> Add New Visitor</button>
                             </div>
                         </form>
                     </div>

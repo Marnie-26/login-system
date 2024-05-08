@@ -12,24 +12,31 @@ class GuestRecordController extends Controller
 {
     public function export_excel()
     {
-        $guests = Guests::select('first_name', 'middle_name', 'last_name', 'visit_purpose', 'visit_date', 'time_in', 'time_out')->orderBy('created_at', 'desc')->get();
+        $guests = Guests::select('first_name', 'middle_name', 'last_name', 'visit_purpose', 'id_presented', 'visit_date', 'time_in', 'time_out')->orderBy('created_at', 'desc')->get();
 
         $admin = User::where('type', '1')->first();
 
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment; filename="guests.xls"');
+        header('Content-Disposition: attachment; filename="visitors-login-record.xls"');
 
         echo "Admin: " . $admin->first_name . " " . $admin->last_name . "\t\n";
         echo "Date Exported: " . date('Y-m-d') . "\t\n";
         echo "Total records: " . count($guests) . "\t\n";
         echo "\t\n";
 
-        echo "First Name\tMiddle Name\tLast Name\tPurpose\tDate\tTime In\tTime Out\n";
+        echo "First Name\tMiddle Name\tLast Name\tPurpose\tID Presented\tDate\tTime In\tTime Out\n";
+
         foreach ($guests as $guest) {
             $time_out = $guest->time_out ? date('h:i A', strtotime($guest->time_out)) : '-';
-            echo $guest->first_name . "\t" . $guest->middle_name . "\t" . $guest->last_name . "\t" . $guest->visit_purpose . "\t" . $guest->visit_date . "\t" . date('h:i A', strtotime($guest->time_in)) . "\t" . $time_out . "\n";
+            echo $guest->first_name . "\t" . 
+            $guest->middle_name . "\t" . 
+            $guest->last_name . "\t" . 
+            $guest->visit_purpose . "\t" . 
+            $guest->id_presented . "\t" .
+            $guest->visit_date . "\t" . 
+            date('h:i A', strtotime($guest->time_in)) . "\t" . 
+            $time_out . "\n";
         }
-
         exit();
     }
 
@@ -39,7 +46,8 @@ class GuestRecordController extends Controller
 
     public function visit_guest_record(){
         $guests = Guests::orderBy('created_at', 'desc')->paginate(5);
-        return view ('guest_record', compact('guests'));
+        $noResult = $guests->isEmpty();
+        return view ('guest_record', compact('guests', 'noResult'));
     }
 
     public function delete_guest_record($id){
@@ -60,6 +68,7 @@ class GuestRecordController extends Controller
             $middle_name = $request->input('middle_name');
             $last_name = $request->input('last_name');
             $visit_purpose = $request->input('visit_purpose');
+            $id_presented = $request->input('id_presented');
             $visit_date = $request->input('visit_date');
             $time_in = $request->input('time_in');
             $time_out = $request->input('time_out');
@@ -74,6 +83,7 @@ class GuestRecordController extends Controller
             $guest->middle_name = $middle_name;
             $guest->last_name = $last_name;
             $guest->visit_purpose = $visit_purpose;
+            $guest->id_presented = $id_presented;
             $guest->visit_date = $visit_date;
             $guest->time_in = $time_in;
             $guest->time_out = $time_out;
@@ -93,6 +103,7 @@ class GuestRecordController extends Controller
             'middle_name' => 'nullable|string',
             'last_name' => 'nullable|string',
             'visit_purpose' => 'nullable|string',
+            'id_presented' => 'nullable|string',
             'visit_date' => 'nullable|date',
             'image' => 'nullable|image|max:2048', // Max 2MB
             'time_in' => 'nullable|date_format:H:i',
@@ -151,14 +162,13 @@ class GuestRecordController extends Controller
             ->orWhere('last_name', 'LIKE', "%$search%")
             ->orWhere('visit_purpose', 'LIKE', "%$search%")
             ->orWhere('visit_date', 'LIKE', "%$search%")
+            ->orWhere('id_presented', 'LIKE', "%$search%")
             ->orWhere('time_in', 'LIKE', "%$search%")
             ->orWhere('time_out', 'LIKE', "%$search%")
             ->paginate(5);
 
-        if($guests->isEmpty()){
-            return redirect()->back()->with('info', 'No results found.');
-        }
+        $noResult = $guests->isEmpty();
 
-        return view('guest_record', compact('guests'));
+        return view('guest_record', compact('guests', 'noResult'));
     }
 }

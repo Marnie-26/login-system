@@ -3,9 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Guest Login System</title>
+        <title>The Regency at Salcedo Visitor's Log</title>
         <link rel="stylesheet" href="{{ asset('css/guest_login_style.css') }}">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://kit.fontawesome.com/16f4fda31b.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-body">
@@ -13,13 +14,13 @@
                 <!-- Current Admin Logged In -->
                 <span class="navbar-text">
                     @if(auth()->check())
-                        Admin: {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                        <i class="fa-solid fa-user-tie"></i> Admin: {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
                     @endif
                 </span>
                 <!-- Logout button -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light">Logout</button>
+                    <button type="submit" class="btn btn-outline-light"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                 </form>
             </div>
         </nav>
@@ -31,14 +32,26 @@
             </div>
             <div class="row mt-3">
                 <div class="col">
-                    <a href="{{ route('guest.login') }}" class="btn btn-dark">Back</a>
-                    <a href="{{ route('export.excel') }}" class="btn btn-dark">Export as Excel</a>
+                    @php
+                        $backUrl = '';
+
+                        if (request()->has('search')) {
+                            $backUrl = route('visit.guest.record');
+                        } elseif (request()->has('page')) {
+                            $backUrl = route('visit.guest.record');
+                        } else {
+                            $backUrl = route('guest.login');
+                        }
+                    @endphp
+
+                    <a href="{{ $backUrl }}" class="btn btn-dark"><i class="fa-solid fa-circle-left"></i> Back</a>
+                    <a href="{{ route('export.excel') }}" class="btn btn-dark"><i class="fa-solid fa-download"></i> Export as Excel</a>
                 </div>
                 <div class="col">
                     <form action="{{ route('search.guest.record') }}" method="GET" class="mb-3">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search..." name="search" value="{{ $search ?? '' }}">
-                            <button type="submit" class="btn btn-dark">Search</button>
+                            <button type="submit" class="btn btn-dark"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
                         </div>
                     </form>
                 </div>
@@ -72,6 +85,7 @@
                                     <th>Middle Name</th>
                                     <th>Last Name</th>
                                     <th>Purpose</th>
+                                    <th>ID Presented</th>
                                     <th>Date</th>
                                     <th>Time In</th>
                                     <th>Time Out</th>
@@ -79,43 +93,50 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($guests as $guest)
-                                <tr>
-                                    <td>{{ $guest->first_name }}</td>
-                                    <td>{{ $guest->middle_name }}</td>
-                                    <td>{{ $guest->last_name }}</td>
-                                    <td>{{ $guest->visit_purpose }}</td>
-                                    <td>{{ $guest->visit_date }}</td>
-                                    <td>{{ date('h:i A', strtotime($guest->time_in)) }}</td>
-                                    <td>
-                                        @if ($guest->time_out)
-                                            {{ date('h:i A', strtotime($guest->time_out)) }}
-                                        @else
-                                            <form id="logTimeOutForm" action="{{ route('log.time.out') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="guest_id" value="{{ $guest->id }}">
-                                                <input type="time" class="form-control time-out-input" name="time_out">
-                                            </form>
-                                        @endif
-                                        <span class="time-out-cell" style="display: none;">{{ $guest->time_out }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            @if (!$guest->time_out)
-                                                <button type="button" class="btn btn-outline-success me-2 save-time-out-btn">Log Time Out</button></form>
+                                @if(!$noResult)
+                                    @foreach($guests as $guest)
+                                    <tr>
+                                        <td>{{ $guest->first_name }}</td>
+                                        <td>{{ $guest->middle_name }}</td>
+                                        <td>{{ $guest->last_name }}</td>
+                                        <td>{{ $guest->visit_purpose }}</td>
+                                        <td>{{ $guest->id_presented }}</td>
+                                        <td>{{ $guest->visit_date }}</td>
+                                        <td>{{ date('h:i A', strtotime($guest->time_in)) }}</td>
+                                        <td>
+                                            @if ($guest->time_out)
+                                                {{ date('h:i A', strtotime($guest->time_out)) }}
+                                            @else
+                                                <form id="logTimeOutForm" action="{{ route('log.time.out') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="guest_id" value="{{ $guest->id }}">
+                                                    <input type="time" class="form-control time-out-input" name="time_out">
+                                                </form>
                                             @endif
-                                            <button type="button" class="btn btn-outline-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal{{ $guest->id }}">Edit</button>
-                                            <button type="button" class="btn btn-outline-danger me-2 delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $guest->id }}">Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
+                                            <span class="time-out-cell" style="display: none;">{{ $guest->time_out }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                @if (!$guest->time_out)
+                                                    <button type="button" class="btn btn-outline-success me-2 save-time-out-btn"><i class="fa-solid fa-stopwatch"></i> Log Time Out</button></form>
+                                                @endif
+                                                <button type="button" class="btn btn-outline-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal{{ $guest->id }}"><i class="fa-solid fa-pencil"></i> Edit</button>
+                                                <button type="button" class="btn btn-outline-danger me-2 delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $guest->id }}"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="9"><center>No available record.</center></td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
 
                        {{-- Pagination --}}
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center">
+                       <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center pagination-dark">
                                 @if ($guests->onFirstPage())
                                     <li class="page-item disabled">
                                         <span class="page-link">Previous</span>
@@ -125,7 +146,7 @@
                                         <a class="page-link" href="{{ $guests->previousPageUrl() }}" rel="prev">Previous</a>
                                     </li>
                                 @endif
-
+                        
                                 @foreach ($guests->getUrlRange(1, $guests->lastPage()) as $page => $url)
                                     @if ($page == $guests->currentPage())
                                         <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
@@ -133,7 +154,7 @@
                                         <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
                                     @endif
                                 @endforeach
-
+                        
                                 @if ($guests->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $guests->nextPageUrl() }}" rel="next">Next</a>
@@ -145,6 +166,7 @@
                                 @endif
                             </ul>
                         </nav>
+                    
 
                     
                         @foreach($guests as $guest)
@@ -204,6 +226,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">ID Presented</label>
+                                                        <input type="text" class="form-control" name="id_presented" value="{{ $guest->id_presented }}" required>
+                                                    </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Date</label>
                                                         <input type="date" class="form-control" name="visit_date" value="{{ $guest->visit_date }}" required>
