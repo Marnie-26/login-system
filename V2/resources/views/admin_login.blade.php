@@ -11,7 +11,7 @@
                 @csrf
                 <h3>Admin Login</h3>
                 @if(session('error'))
-                    <div class="error-message">{{ session('error') }}</div>
+                    <div id="error-message" class="error-message">{{ session('error') }}</div>
                 @endif
                 <label for="user_name">Username</label>
                 <input type="text" id="user_name" name="user_name">
@@ -20,5 +20,29 @@
                 <button type="submit">Log In</button>
             </form>
         </div>
+
+        <script>
+            // Hide alert
+            function hideErrorMessage() {
+                var errorMessage = document.getElementById('error-message');
+                if (errorMessage) {
+                    setTimeout(function() {
+                        errorMessage.style.display = 'none';
+                    }, 2000);
+                }
+            }
+        
+            window.onload = function() {
+                hideErrorMessage();
+        
+                setTimeout(function() {
+                    var errorMessage = document.getElementById('error-message');
+                    if (errorMessage) {
+                        errorMessage.style.display = 'none';
+                    }
+                }, 2000);
+            };
+        </script>
+        
     </body>
 </html>

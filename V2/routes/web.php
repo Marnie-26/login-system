@@ -27,3 +27,6 @@ Route::post('/guests-store', [GuestRecordController::class, 'store'])->name('gue
 Route::get('/visit-guest-record', [GuestRecordController::class, 'visit_guest_record'])->name('visit.guest.record');
 Route::delete('/delete-guest-record/{id}', [GuestRecordController::class, 'delete_guest_record'])->name('delete.guest.record');
 Route::post('/log-time-out', [GuestRecordController::class, 'log_time_out'])->name('log.time.out');
+Route::post('/update-guest-record', [GuestRecordController::class, 'update_guest_record'])->name('update.guest.record');
+Route::get('/search-guest-record', [GuestRecordController::class, 'search_guest_record'])->name('search.guest.record');
+Route::get('/export-excel', [GuestRecordController::class, 'export_excel'])->name('export.excel');

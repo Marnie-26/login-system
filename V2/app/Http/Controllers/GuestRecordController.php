@@ -6,16 +6,39 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Guests;
-use Illuminate\Http\JsonResponse;
+use App\Models\User;
 
 class GuestRecordController extends Controller
 {
+    public function export_excel()
+    {
+        $guests = Guests::select('first_name', 'middle_name', 'last_name', 'visit_purpose', 'visit_date', 'time_in', 'time_out')->orderBy('created_at', 'desc')->get();
+
+        $admin = User::where('type', '1')->first();
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment; filename="guests.xls"');
+
+        echo "Admin: " . $admin->first_name . " " . $admin->last_name . "\t\n";
+        echo "Date Exported: " . date('Y-m-d') . "\t\n";
+        echo "Total records: " . count($guests) . "\t\n";
+        echo "\t\n";
+
+        echo "First Name\tMiddle Name\tLast Name\tPurpose\tDate\tTime In\tTime Out\n";
+        foreach ($guests as $guest) {
+            $time_out = $guest->time_out ? date('h:i A', strtotime($guest->time_out)) : '-';
+            echo $guest->first_name . "\t" . $guest->middle_name . "\t" . $guest->last_name . "\t" . $guest->visit_purpose . "\t" . $guest->visit_date . "\t" . date('h:i A', strtotime($guest->time_in)) . "\t" . $time_out . "\n";
+        }
+
+        exit();
+    }
+
     public function index(){
         return view('guest_login');
     }
 
     public function visit_guest_record(){
-        $guests = Guests::all();
+        $guests = Guests::orderBy('created_at', 'desc')->paginate(5);
         return view ('guest_record', compact('guests'));
     }
 
@@ -28,6 +51,41 @@ class GuestRecordController extends Controller
             return redirect('/visit-guest-record')->with('error', "Visitor's record not found.");
         }
     }
+
+    public function update_guest_record(Request $request)
+    {
+        try {
+            $guest_id = $request->input('guest_id');
+            $first_name = $request->input('first_name');
+            $middle_name = $request->input('middle_name');
+            $last_name = $request->input('last_name');
+            $visit_purpose = $request->input('visit_purpose');
+            $visit_date = $request->input('visit_date');
+            $time_in = $request->input('time_in');
+            $time_out = $request->input('time_out');
+    
+            if (preg_match('/[0-9]/', $first_name) || preg_match('/[0-9]/', $middle_name) || preg_match('/[0-9]/', $last_name)) {
+                return redirect()->back()->with('error', 'Please enter valid information.');
+            }
+
+            $guest = Guests::findOrFail($guest_id);
+    
+            $guest->first_name = $first_name;
+            $guest->middle_name = $middle_name;
+            $guest->last_name = $last_name;
+            $guest->visit_purpose = $visit_purpose;
+            $guest->visit_date = $visit_date;
+            $guest->time_in = $time_in;
+            $guest->time_out = $time_out;
+    
+            $guest->save();
+    
+            return redirect()->back()->with('success', 'Record updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Editing record failed. Please try again.');
+        }
+    }
+    
 
     public function store(Request $request){
         $validatedData = $request->validate([
@@ -82,5 +140,25 @@ class GuestRecordController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Logging time out failed. Please try again.']);
         }
+    }
+
+    public function search_guest_record(Request $request)
+    {
+        $search = $request->input('search');
+
+        $guests = Guests::where('first_name', 'LIKE', "%$search%")
+            ->orWhere('middle_name', 'LIKE', "%$search%")
+            ->orWhere('last_name', 'LIKE', "%$search%")
+            ->orWhere('visit_purpose', 'LIKE', "%$search%")
+            ->orWhere('visit_date', 'LIKE', "%$search%")
+            ->orWhere('time_in', 'LIKE', "%$search%")
+            ->orWhere('time_out', 'LIKE', "%$search%")
+            ->paginate(5);
+
+        if($guests->isEmpty()){
+            return redirect()->back()->with('info', 'No results found.');
+        }
+
+        return view('guest_record', compact('guests'));
     }
 }

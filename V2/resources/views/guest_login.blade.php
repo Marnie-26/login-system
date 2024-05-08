@@ -83,5 +83,34 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script>
+            // Hide alert
+            function hideAlerts() {
+                var successAlert = document.getElementById('success-alert');
+                var errorAlert = document.getElementById('error-alert');
+
+                if (successAlert) {
+                    setTimeout(function() {
+                        successAlert.style.display = 'none';
+                    }, 2000);
+                }
+
+                if (errorAlert) {
+                    setTimeout(function() {
+                        errorAlert.style.display = 'none';
+                    }, 2000);
+                }
+            }
+
+            window.onload = function() {
+                hideAlerts();
+
+                setTimeout(function() {
+                    document.querySelectorAll('.alert').forEach(function(alert) {
+                        alert.style.display = 'none';
+                    });
+                }, 2000);
+            };
+        </script>
     </body>
 </html>
