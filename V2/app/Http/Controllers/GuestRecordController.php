@@ -45,7 +45,7 @@ class GuestRecordController extends Controller
     }
 
     public function visit_guest_record(){
-        $guests = Guests::orderBy('created_at', 'desc')->paginate(5);
+        $guests = Guests::orderBy('created_at', 'desc')->paginate(10);
         $noResult = $guests->isEmpty();
         return view ('guest_record', compact('guests', 'noResult'));
     }

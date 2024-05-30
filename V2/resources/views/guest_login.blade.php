@@ -78,7 +78,7 @@
                                 </tbody>
                             </table>
                             <div class="col text-end">
-                                <button type="submit" class="btn btn-dark"> <i class="fa-solid fa-plus"></i> Add New Visitor</button>
+                                <button type="submit" class="btn btn-dark add-visitor-btn"> <i class="fa-solid fa-plus"></i> Add New Visitor</button>
                             </div>
                         </form>
                     </div>

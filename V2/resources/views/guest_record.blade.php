@@ -31,10 +31,10 @@
                 </div>
             </div>
             <div class="row mt-3">
-                <div class="col">
+                <div class="col-12 col-md-6 mb-2">
                     @php
                         $backUrl = '';
-
+        
                         if (request()->has('search')) {
                             $backUrl = route('visit.guest.record');
                         } elseif (request()->has('page')) {
@@ -43,11 +43,11 @@
                             $backUrl = route('guest.login');
                         }
                     @endphp
-
-                    <a href="{{ $backUrl }}" class="btn btn-dark"><i class="fa-solid fa-circle-left"></i> Back</a>
-                    <a href="{{ route('export.excel') }}" class="btn btn-dark"><i class="fa-solid fa-download"></i> Export as Excel</a>
+        
+                    <a href="{{ $backUrl }}" class="btn btn-dark mb-2"><i class="fa-solid fa-circle-left"></i> Back</a>
+                    <a href="{{ route('export.excel') }}" class="btn btn-dark mb-2"><i class="fa-solid fa-download"></i> Export as Excel</a>
                 </div>
-                <div class="col">
+                <div class="col-12 col-md-6 mb-2">
                     <form action="{{ route('search.guest.record') }}" method="GET" class="mb-3">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search..." name="search" value="{{ $search ?? '' }}">
@@ -56,7 +56,7 @@
                     </form>
                 </div>
             </div>
-
+        
             @if (session('success'))
                 <div class="alert alert-success" role="alert" style="margin-top: 15px">
                     {{ session('success') }}
@@ -68,13 +68,13 @@
                     {{ session('error') }}
                 </div>
             @endif
-
+        
             @if (session('info'))
                 <div class="alert alert-info" role="alert" style="margin-top: 15px">
                     {{ session('info') }}
                 </div>
             @endif
-
+        
             <div class="row mt-3">
                 <div class="col">
                     <div class="table-responsive">
@@ -134,8 +134,8 @@
                             </tbody>
                         </table>
 
-                       {{-- Pagination --}}
-                       <nav aria-label="Page navigation example">
+                        {{-- Pagination --}}
+                        <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-center pagination-dark">
                                 @if ($guests->onFirstPage())
                                     <li class="page-item disabled">
@@ -168,7 +168,7 @@
                         </nav>
                     
 
-                    
+        
                         @foreach($guests as $guest)
                         <!-- Delete Modal -->
                         <div class="modal fade" id="deleteModal{{ $guest->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel{{ $guest->id }}" aria-hidden="true">
@@ -192,7 +192,7 @@
                                 </div>
                             </div>
                         </div>
-
+        
                         <!-- Edit modal -->
                         <div class="modal fade" id="editModal{{ $guest->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel{{ $guest->id }}" aria-hidden="true">
                             <div class="modal-dialog">
